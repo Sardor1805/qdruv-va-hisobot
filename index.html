@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Qidiruv — Telefon Savdo</title>
+
+  <!-- ============ PWA ============ -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#00d4ff">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Qidiruv">
+  <meta name="mobile-web-app-capable" content="yes">
+
+  <!-- iOS icon -->
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+
+  <!-- Icon -->
+  <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+  <link rel="icon" type="image/png" sizes="512x512" href="icons/icon-512.png">
+
+  <!-- ============ FAYLLAR ============ -->
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+  <!-- ... body o'zgarishsiz ... -->
+
+  <script src="app.js"></script>
+</body>
+</html>
+<body>
+
+  <!-- ============ HEADER ============ -->
+  <header class="header">
+    <div class="header-brand">
+      <span class="header-icon">📱</span>
+      <span class="header-text">Qidiruv</span>
+    </div>
+    <button class="savat-tugma-header" id="savat-tugma">
+      🛒
+      <span class="savat-badge" id="savat-badge">0</span>
+    </button>
+  </header>
+
+  <!-- ============ MAIN ============ -->
+  <main class="main">
+
+    <!-- Filtrlar -->
+    <div class="filtr-karta">
+      <div class="forma-guruh">
+        <label>Tovar turi</label>
+        <select id="qidiruv-tur">
+          <option value="Hammasi">Hammasi</option>
+        </select>
+      </div>
+      <div class="forma-guruh">
+        <label>Telefon modeli</label>
+        <select id="qidiruv-model">
+          <option value="Hammasi">Hammasi</option>
+        </select>
+      </div>
+      <div class="forma-guruh">
+        <label>Qidiruv (kod / model / marka)</label>
+        <input type="text" id="qidiruv-matn" placeholder="Masalan: iPhone 13, Samsung, A12...">
+      </div>
+    </div>
+
+    <!-- Natijalar -->
+    <div class="natija-sarlavha">
+      <h2>🔍 Qidiruv natijalari</h2>
+      <span class="natija-soni" id="qidiruv-soni">0 ta</span>
+    </div>
+
+    <div class="jadval-wrap">
+      <table class="jadval">
+        <thead>
+          <tr>
+            <th>Kod</th>
+            <th>Model</th>
+            <th>Marka</th>
+            <th>Narx</th>
+            <th>Soni</th>
+            <th>Amal</th>
+          </tr>
+        </thead>
+        <tbody id="qidiruv-tbody"></tbody>
+      </table>
+    </div>
+
+    <div id="pagination" class="pagination"></div>
+
+    <!-- Mos modellar -->
+    <div class="natija-sarlavha">
+      <h2>🔗 Mos modellar</h2>
+    </div>
+
+    <div class="jadval-wrap">
+      <table class="jadval">
+        <thead>
+          <tr>
+            <th>Kod</th>
+            <th>Model</th>
+            <th>Marka</th>
+            <th>Narx</th>
+            <th>Soni</th>
+            <th>Amal</th>
+          </tr>
+        </thead>
+        <tbody id="mos-modellar-tbody"></tbody>
+      </table>
+    </div>
+
+  </main>
+
+  <!-- ============ SAVAT PANEL ============ -->
+  <div class="savat-overlay yashirin" id="savat-overlay"></div>
+
+  <div class="savat-panel yashirin" id="savat-panel">
+    <div class="savat-header">
+      <div class="savat-sarlavha">
+        🛒 Savat
+        <span class="savat-soni-text" id="savat-soni-text">(0 ta)</span>
+      </div>
+      <button class="savat-yopish" id="savat-yopish">✕</button>
+    </div>
+
+    <div class="savat-royxat" id="savat-royxat">
+      <div class="savat-bosh">
+        <div class="savat-bosh-icon">🛒</div>
+        <div>Savat bo'sh</div>
+        <div class="savat-bosh-matn">Qidiruvdan tovar qo'shing</div>
+      </div>
+    </div>
+
+    <div class="savat-footer">
+      <div class="savat-jami">
+        <span>Jami:</span>
+        <strong id="savat-jami">0 so'm</strong>
+      </div>
+      <div class="savat-footer-tugmalar">
+        <button class="btn btn-qizil" id="savat-tozalash">🧹 Tozalash</button>
+        <button class="btn btn-asosiy" id="savat-sotish">🛒 Sotish</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ SOTUV MODAL ============ -->
+  <div class="modal-overlay yashirin" id="sotuv-modal-overlay">
+    <div class="modal modal-katta">
+      <div class="modal-icon">🛒</div>
+      <div class="modal-xabar">Sotuvni yakunlash</div>
+
+      <div class="modal-jami">
+        <span>Jami summa:</span>
+        <strong id="modal-jami-summa">0 so'm</strong>
+      </div>
+
+      <div class="forma-guruh">
+        <label>To'lov turi <span class="majburiy">*</span></label>
+        <div class="radio-guruh">
+          <label class="radio-label"><input type="radio" name="savat-tolov" value="naqd" checked> Naqd</label>
+          <label class="radio-label"><input type="radio" name="savat-tolov" value="karta"> Karta</label>
+          <label class="radio-label"><input type="radio" name="savat-tolov" value="nasiya"> Nasiya</label>
+        </div>
+      </div>
+
+      <div class="forma-guruh yashirin" id="savat-mijoz-guruh">
+        <label>Mijoz <span class="majburiy">*</span></label>
+        <select id="savat-mijoz"><option value="">— Mijoz tanlang —</option></select>
+      </div>
+
+      <div class="modal-tugmalar">
+        <button class="btn btn-kulrang" id="sotuv-bekor">Bekor qilish</button>
+        <button class="btn btn-asosiy" id="sotuv-tasdiq">✅ Sotishni yakunlash</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ TASDIQLASH MODAL ============ -->
+  <div class="modal-overlay yashirin" id="modal-overlay">
+    <div class="modal">
+      <div class="modal-icon">⚠️</div>
+      <div class="modal-xabar" id="modal-xabar">Tasdiqlaysizmi?</div>
+      <div class="modal-tugmalar">
+        <button class="btn btn-kulrang" id="modal-bekor">Bekor qilish</button>
+        <button class="btn btn-qizil" id="modal-tasdiq">Tasdiqlash</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ TOAST ============ -->
+  <div class="toast-konteyner" id="toast-konteyner"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>

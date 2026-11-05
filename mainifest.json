@@ -1,0 +1,38 @@
+{
+  "name": "Telefon Savdo — Qidiruv",
+  "short_name": "Qidiruv",
+  "description": "Telefon savdo tizimi uchun tezkor qidiruv va savat",
+  "start_url": "/qidiruv-pwa/",
+  "scope": "/qidiruv-pwa/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0a0e17",
+  "theme_color": "#00d4ff",
+  "lang": "uz",
+  "icons": [
+    {
+      "src": "/qidiruv-pwa/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/qidiruv-pwa/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/qidiruv-pwa/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/qidiruv-pwa/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}
