@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Telefon Savdo Boshqaruv Tizimi</title>
+
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#2563eb">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Telefon Savdo">
+  <meta name="mobile-web-app-capable" content="yes">
+
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+  <!-- ============ SIDEBAR ============ -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <span class="brand-icon">📱</span>
+      <span class="brand-text">Telefon Savdo</span>
+    </div>
+    <nav class="sidebar-nav">
+      <button class="nav-btn faol" data-sahifa="sahifa-01">🏠 <span>Bosh sahifa</span></button>
+      <button class="nav-btn" data-sahifa="sahifa-02">🔍 <span>Qidiruv</span></button>
+      <button class="nav-btn" data-sahifa="sahifa-03">➕ <span>Tovar qo'shish</span></button>
+      <button class="nav-btn" data-sahifa="sahifa-04">📋 <span>Omborga kirim/chiqim</span></button>
+      <button class="nav-btn" data-sahifa="sahifa-05">✏️ <span>Tovarlarni tahrirlash</span></button>
+      <button class="nav-btn" data-sahifa="sahifa-06">🛒 <span>Tovar sotuvi</span></button>
+      <button class="nav-btn" data-sahifa="sahifa-06-1">🔧 <span>Xizmat sotuvi</span></button>
+      <button class="nav-btn" data-sahifa="sahifa-07">💸 <span>Xarajat</span></button>
+      <button class="nav-btn" data-sahifa="sahifa-08">🔗 <span>Moslik jadvali</span></button>
+      <button class="nav-btn" data-sahifa="sahifa-09">👥 <span>Mijozlar</span></button>
+    </nav>
+  </aside>
+
+  <!-- ============ MAIN CONTENT ============ -->
+  <main class="main-content">
+
+    <section id="sahifa-01" class="sahifa faol">
+      <h1 class="sahifa-sarlavha">🏠 Bosh sahifa</h1>
+      <div class="kassa-grid">
+        <div class="karta karta-yashil">
+          <div class="karta-icon">💵</div>
+          <div class="karta-label">NAQD KASSA</div>
+          <div class="karta-qiymat" id="kassa-naqd">0 so'm</div>
+        </div>
+        <div class="karta karta-kok">
+          <div class="karta-icon">💳</div>
+          <div class="karta-label">KARTA KASSA</div>
+          <div class="karta-qiymat" id="kassa-karta">0 so'm</div>
+        </div>
+      </div>
+
+      <h2 class="bolim-sarlavha">📊 Bugungi hisobot</h2>
+      <div class="kassa-grid">
+        <div class="karta karta-yashil">
+          <div class="karta-icon">📈</div>
+          <div class="karta-label">TUSHUM</div>
+          <div class="karta-qiymat" id="bugun-tushum">0 so'm</div>
+        </div>
+        <div class="karta karta-qizil">
+          <div class="karta-icon">📉</div>
+          <div class="karta-label">XARAJAT</div>
+          <div class="karta-qiymat" id="bugun-xarajat">0 so'm</div>
+        </div>
+        <div class="karta karta-kok">
+          <div class="karta-icon">💰</div>
+          <div class="karta-label">FOYDA</div>
+          <div class="karta-qiymat" id="bugun-foyda">0 so'm</div>
+        </div>
+      </div>
+    </section>
+
+    <section id="sahifa-02" class="sahifa">
+      <h1 class="sahifa-sarlavha">🔍 Qidiruv</h1>
+
+      <div class="filtr-qator">
+        <div class="forma-guruh">
+          <label>Tovar turi</label>
+          <select id="qidiruv-tur">
+            <option value="Hammasi">Hammasi</option>
+          </select>
+        </div>
+        <div class="forma-guruh">
+          <label>Telefon modeli</label>
+          <select id="qidiruv-model">
+            <option value="Hammasi">Hammasi</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="forma-guruh">
+        <label>Qidiruv (model kodi / model nomi / marka)</label>
+        <input type="text" id="qidiruv-matn" placeholder="Masalan: iPhone 13, Samsung, A12...">
+      </div>
+
+      <div class="jadval-wrap">
+        <table class="jadval">
+          <thead>
+            <tr>
+              <th>Kod</th>
+              <th>Model</th>
+              <th>Marka</th>
+              <th>Narx</th>
+              <th>Soni</th>
+            </tr>
+          </thead>
+          <tbody id="qidiruv-tbody"></tbody>
+        </table>
+      </div>
+      
+      <div id="pagination" class="pagination"></div>
+
+      <h2 class="bolim-sarlavha">🔗 MOS MODELLAR</h2>
+      <div class="jadval-wrap">
+        <table class="jadval">
+          <thead>
+            <tr>
+              <th>Kod</th>
+              <th>Model</th>
+              <th>Marka</th>
+              <th>Narx</th>
+              <th>Soni</th>
+            </tr>
+          </thead>
+          <tbody id="mos-modellar-tbody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="sahifa-03" class="sahifa">
+      <h1 class="sahifa-sarlavha">➕ Tovar qo'shish</h1>
+      <div class="forma-karta">
+        <div class="forma-guruh">
+          <label>Tovar turi <span class="majburiy">*</span></label>
+          <select id="qoshish-tur"><option value="">— Tanlang —</option></select>
+        </div>
+        <div class="forma-guruh">
+          <label>Model kodi <span class="majburiy">*</span></label>
+          <input type="text" id="qoshish-kod" placeholder="Masalan: A12-001" disabled>
+        </div>
+        <div class="forma-guruh">
+          <label>Telefon modeli <span class="majburiy">*</span></label>
+          <input type="text" id="qoshish-model" placeholder="Masalan: iPhone 13" disabled>
+        </div>
+        <div class="forma-guruh">
+          <label>Telefon markasi <span class="majburiy">*</span></label>
+          <input type="text" id="qoshish-marka" placeholder="Masalan: Apple" disabled>
+        </div>
+        <div class="forma-guruh">
+          <label>Narxi (so'm) <span class="majburiy">*</span></label>
+          <input type="number" id="qoshish-narx" min="0" placeholder="0" disabled>
+        </div>
+        <button class="btn btn-asosiy" id="qoshish-saqlash" disabled>💾 Saqlash</button>
+      </div>
+    </section>
+
+    <section id="sahifa-04" class="sahifa">
+      <h1 class="sahifa-sarlavha">📥 Omborga kirim/chiqim</h1>
+      <div class="forma-karta">
+        <div class="forma-guruh">
+          <label>Model kodi <span class="majburiy">*</span></label>
+          <input type="text" id="kirim-kod" list="kirim-kod-list" placeholder="Qidirish yoki tanlash...">
+          <datalist id="kirim-kod-list"></datalist>
+        </div>
+        <div class="forma-guruh">
+          <label>Soni <span class="majburiy">*</span></label>
+          <input type="number" id="kirim-soni" min="1" placeholder="1">
+        </div>
+        <div class="forma-guruh">
+          <label>Izoh</label>
+          <input type="text" id="kirim-izoh" placeholder="Ixtiyoriy">
+        </div>
+        <div class="tugma-qator">
+          <button class="btn btn-asosiy" id="kirim-saqlash">📥 Kirim qilish</button>
+          <button class="btn btn-qizil" id="chiqim-saqlash">📤 Chiqim qilish</button>
+        </div>
+      </div>
+
+      <h2 class="bolim-sarlavha">📋 Oxirgi kirimlar/chiqimlar</h2>
+      <div class="jadval-wrap">
+        <table class="jadval">
+          <thead>
+            <tr>
+              <th>Sana</th>
+              <th>Model kodi</th>
+              <th>Amal</th>
+              <th>Soni</th>
+              <th>Izoh</th>
+              <th>Bekor qilish</th>
+            </tr>
+          </thead>
+          <tbody id="kirim-tbody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="sahifa-05" class="sahifa">
+      <h1 class="sahifa-sarlavha">✏️ Tovarlarni tahrirlash</h1>
+      <div class="statistika-karta">
+        <div class="filtr-qator" style="margin-bottom: 0;">
+          <div class="forma-guruh" style="margin-bottom: 0;">
+            <label>Tovar turi</label>
+            <select id="tahrir-tur"><option value="Hammasi">Hammasi</option></select>
+          </div>
+          <div class="forma-guruh" style="margin-bottom: 0;">
+            <label>Model</label>
+            <select id="tahrir-model"><option value="Hammasi">Hammasi</option></select>
+          </div>
+          <div class="natija-soni-wrap">
+            <div class="natija-soni" id="tahrir-jami">Jami 0 ta tovar</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="forma-guruh">
+        <label>Qidiruv</label>
+        <input type="text" id="tahrir-qidiruv" placeholder="Kod / model / marka...">
+      </div>
+
+      <div class="jadval-wrap">
+        <table class="jadval">
+          <thead>
+            <tr>
+              <th>Kod</th>
+              <th>Model</th>
+              <th>Marka</th>
+              <th>Narx</th>
+              <th>Soni</th>
+              <th>Amallar</th>
+            </tr>
+          </thead>
+          <tbody id="tahrir-tbody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="sahifa-06" class="sahifa">
+      <h1 class="sahifa-sarlavha">🛒 Tovar sotuvi</h1>
+      <div class="forma-karta">
+        <div class="forma-guruh">
+          <label>Model kodi <span class="majburiy">*</span></label>
+          <input type="text" id="sotuv-kod" list="sotuv-kod-list" placeholder="Qidirish yoki tanlash...">
+          <datalist id="sotuv-kod-list"></datalist>
+        </div>
+        <div class="forma-guruh">
+          <label>Mavjud soni</label>
+          <input type="text" id="sotuv-mavjud" readonly value="—">
+        </div>
+        <div class="forma-guruh">
+          <label>Soni <span class="majburiy">*</span></label>
+          <input type="number" id="sotuv-soni" min="1" placeholder="1">
+        </div>
+        <div class="forma-guruh">
+          <label>Sotuv narxi (so'm) <span class="majburiy">*</span></label>
+          <input type="number" id="sotuv-narx" min="0" placeholder="0">
+        </div>
+        <div class="forma-guruh">
+          <label>To'lov turi <span class="majburiy">*</span></label>
+          <div class="radio-guruh">
+            <label class="radio-label"><input type="radio" name="sotuv-tolov" value="naqd" checked> Naqd</label>
+            <label class="radio-label"><input type="radio" name="sotuv-tolov" value="karta"> Karta</label>
+            <label class="radio-label"><input type="radio" name="sotuv-tolov" value="nasiya"> Nasiya</label>
+          </div>
+        </div>
+        <div class="forma-guruh yashirin" id="sotuv-mijoz-guruh">
+          <label>Mijoz <span class="majburiy">*</span></label>
+          <select id="sotuv-mijoz"><option value="">— Mijoz tanlang —</option></select>
+        </div>
+        <button class="btn btn-asosiy" id="sotuv-saqlash">🛒 Sotuvni yakunlash</button>
+      </div>
+
+      <!-- YANGI: Bugungi sotuvlar tarixi -->
+      <h2 class="bolim-sarlavha">📋 Bugungi sotuvlar tarixi</h2>
+      <div class="jadval-wrap">
+        <table class="jadval">
+          <thead>
+            <tr>
+              <th>Vaqt</th>
+              <th>Model kodi</th>
+              <th>Soni</th>
+              <th>Summa</th>
+              <th>To'lov</th>
+              <th>Amal</th>
+            </tr>
+          </thead>
+          <tbody id="sotuv-tarix-tbody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="sahifa-06-1" class="sahifa">
+      <h1 class="sahifa-sarlavha">🔧 Xizmat sotuvi</h1>
+      <div class="forma-karta">
+        <div class="forma-guruh">
+          <label>Xizmat nomi <span class="majburiy">*</span></label>
+          <input type="text" id="xizmat-nomi" placeholder="Masalan: Ekran almashtirish">
+        </div>
+        <div class="forma-guruh">
+          <label>Narxi (so'm) <span class="majburiy">*</span></label>
+          <input type="number" id="xizmat-narx" min="0" placeholder="0">
+        </div>
+        <div class="forma-guruh">
+          <label>Izoh</label>
+          <input type="text" id="xizmat-izoh" placeholder="Ixtiyoriy">
+        </div>
+        <div class="forma-guruh">
+          <label>To'lov turi <span class="majburiy">*</span></label>
+          <div class="radio-guruh">
+            <label class="radio-label"><input type="radio" name="xizmat-tolov" value="naqd" checked> Naqd</label>
+            <label class="radio-label"><input type="radio" name="xizmat-tolov" value="karta"> Karta</label>
+            <label class="radio-label"><input type="radio" name="xizmat-tolov" value="nasiya"> Nasiya</label>
+          </div>
+        </div>
+        <div class="forma-guruh yashirin" id="xizmat-mijoz-guruh">
+          <label>Mijoz <span class="majburiy">*</span></label>
+          <select id="xizmat-mijoz"><option value="">— Mijoz tanlang —</option></select>
+        </div>
+        <button class="btn btn-asosiy" id="xizmat-saqlash">🔧 Xizmatni saqlash</button>
+      </div>
+
+      <h2 class="bolim-sarlavha">📋 Bugungi xizmat sotuvlari</h2>
+      <div class="jadval-wrap">
+        <table class="jadval">
+          <thead>
+            <tr>
+              <th>Xizmat nomi</th>
+              <th>Narxi</th>
+              <th>To'lov turi</th>
+              <th>Sana</th>
+            </tr>
+          </thead>
+          <tbody id="xizmat-tbody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="sahifa-07" class="sahifa">
+      <h1 class="sahifa-sarlavha">💸 Xarajat</h1>
+      <div class="forma-karta">
+        <div class="forma-guruh">
+          <label>Xarajat nomi <span class="majburiy">*</span></label>
+          <input type="text" id="xarajat-nomi" placeholder="Masalan: Ijara">
+        </div>
+        <div class="forma-guruh">
+          <label>Miqdori (so'm) <span class="majburiy">*</span></label>
+          <input type="number" id="xarajat-miqdor" min="0" placeholder="0">
+        </div>
+        <div class="forma-guruh">
+          <label>To'lov turi <span class="majburiy">*</span></label>
+          <div class="radio-guruh">
+            <label class="radio-label"><input type="radio" name="xarajat-tolov" value="naqd" checked> Naqd</label>
+            <label class="radio-label"><input type="radio" name="xarajat-tolov" value="karta"> Karta</label>
+          </div>
+        </div>
+        <div class="forma-guruh">
+          <label>Izoh</label>
+          <input type="text" id="xarajat-izoh" placeholder="Ixtiyoriy">
+        </div>
+        <button class="btn btn-qizil" id="xarajat-saqlash">💸 Xarajat qo'shish</button>
+      </div>
+
+      <h2 class="bolim-sarlavha">📋 Bugungi xarajatlar</h2>
+      <div class="jadval-wrap">
+        <table class="jadval">
+          <thead>
+            <tr>
+              <th>Nomi</th>
+              <th>Miqdori</th>
+              <th>To'lov turi</th>
+              <th>Sana</th>
+            </tr>
+          </thead>
+          <tbody id="xarajat-tbody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="sahifa-08" class="sahifa">
+      <h1 class="sahifa-sarlavha">🔗 Moslik jadvali</h1>
+      <div class="forma-karta" style="border-top: 4px solid var(--kok);">
+        <h3 class="forma-ichki-sarlavha" style="color: var(--kok);">1-QADAM: Asosiy modelni tanlang</h3>
+        <div class="forma-guruh">
+          <label>Asosiy model kodi <span class="majburiy">*</span></label>
+          <input type="text" id="mos-asosiy-kod" list="mos-asosiy-list" placeholder="Qidiring (masalan: IP13-001)">
+          <datalist id="mos-asosiy-list"></datalist>
+        </div>
+        <div class="forma-guruh">
+          <label>Tanlangan model ma'lumoti</label>
+          <input type="text" id="mos-asosiy-info" readonly value="— Model tanlanmagan —" style="cursor: not-allowed;">
+        </div>
+
+        <h3 class="forma-ichki-sarlavha" style="color: var(--kok); margin-top: 28px;">2-QADAM: Mos model ma'lumotlarini kiriting</h3>
+        <div class="forma-guruh">
+          <label>Telefon modeli <span class="majburiy">*</span></label>
+          <input type="text" id="mos-tovar-model" placeholder="Masalan: iPhone 13 Pro">
+        </div>
+        <div class="forma-guruh">
+          <label>Telefon markasi <span class="majburiy">*</span></label>
+          <input type="text" id="mos-tovar-marka" placeholder="Masalan: Apple">
+        </div>
+        
+        <div class="tugma-qator">
+          <button class="btn btn-asosiy btn-yashil" id="mos-saqlash">💾 SAQLASH</button>
+          <button class="btn btn-asosiy" id="mos-qoshish">➕ QO'SHISH</button>
+          <button class="btn btn-kulrang" id="mos-tozalash">🧹 TOZALASH</button>
+        </div>
+      </div>
+
+      <h2 class="bolim-sarlavha">📋 Mosliklar ro'yxati</h2>
+      <div class="jadval-wrap">
+        <table class="jadval">
+          <thead>
+            <tr>
+              <th style="width: 35%;">Asosiy model (A)</th>
+              <th style="width: 50%;">Mos keluvchi modellar (A1, A2...)</th>
+              <th style="width: 15%; text-align: center;">Amallar</th>
+            </tr>
+          </thead>
+          <tbody id="mos-tbody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="sahifa-09" class="sahifa">
+      <h1 class="sahifa-sarlavha">👥 Mijozlar</h1>
+      <div class="filtr-qator">
+        <div class="forma-guruh">
+          <label>Qidiruv (ism / telefon)</label>
+          <input type="text" id="mijoz-qidiruv" placeholder="Ism yoki telefon...">
+        </div>
+        <button class="btn btn-asosiy" id="mijoz-yangi">➕ Yangi mijoz</button>
+      </div>
+
+      <div class="jadval-wrap">
+        <table class="jadval">
+          <thead>
+            <tr>
+              <th>Ism</th>
+              <th>Telefon</th>
+              <th>Qarzi</th>
+              <th>Olgan tavari</th>
+              <th>Amallar</th>
+            </tr>
+          </thead>
+          <tbody id="mijoz-tbody"></tbody>
+        </table>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ============ MOBILE BOTTOM NAV ============ -->
+  <nav class="bottom-nav" id="bottom-nav">
+    <button class="bnav-btn" data-sahifa="sahifa-02" title="Qidiruv">🔍</button>
+    <button class="bnav-btn" data-sahifa="sahifa-06" title="Tovar sotuvi">🛒</button>
+    <button class="bnav-btn faol" data-sahifa="sahifa-01" title="Bosh sahifa">🏠</button>
+    <button class="bnav-btn" data-sahifa="sahifa-06-1" title="Xizmat sotuvi">🔧</button>
+    <button class="bnav-btn" data-sahifa="sahifa-07" title="Xarajat">💸</button>
+    <button class="bnav-btn" data-sahifa="sahifa-09" title="Mijozlar">👥</button>
+    <button class="bnav-btn" data-sahifa="sahifa-05" title="Tahrirlash">✏️</button>
+    <button class="bnav-btn" data-sahifa="sahifa-04" title="Ombor">📋</button>
+    <button class="bnav-btn" data-sahifa="sahifa-03" title="Tovar qo'shish">➕</button>
+    <button class="bnav-btn" data-sahifa="sahifa-08" title="Moslik">🔗</button>
+  </nav>
+
+  <!-- ============ MODAL OYNALARI ============ -->
+  <div class="toast-konteyner" id="toast-konteyner"></div>
+
+  <div class="modal-overlay yashirin" id="modal-overlay">
+    <div class="modal">
+      <div class="modal-icon">⚠️</div>
+      <div class="modal-xabar" id="modal-xabar">Tasdiqlaysizmi?</div>
+      <div class="modal-tugmalar">
+        <button class="btn btn-kulrang" id="modal-bekor">Bekor qilish</button>
+        <button class="btn btn-qizil" id="modal-tasdiq">Tasdiqlash</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay yashirin" id="tahrir-modal-overlay">
+    <div class="modal modal-katta">
+      <div class="modal-icon">✏️</div>
+      <div class="modal-xabar">Tovarni tahrirlash</div>
+      <div class="forma-guruh">
+        <label>Model kodi</label>
+        <input type="text" id="tm-kod">
+      </div>
+      <div class="forma-guruh">
+        <label>Model</label>
+        <input type="text" id="tm-model">
+      </div>
+      <div class="forma-guruh">
+        <label>Marka</label>
+        <input type="text" id="tm-marka">
+      </div>
+      <div class="forma-guruh">
+        <label>Narx</label>
+        <input type="number" id="tm-narx" min="0">
+      </div>
+      <div class="forma-guruh">
+        <label>Soni</label>
+        <input type="number" id="tm-soni" min="0">
+      </div>
+      <div class="modal-tugmalar">
+        <button class="btn btn-kulrang" id="tm-bekor">Bekor qilish</button>
+        <button class="btn btn-asosiy" id="tm-saqlash">Saqlash</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay yashirin" id="mijoz-modal-overlay">
+    <div class="modal">
+      <div class="modal-icon">👤</div>
+      <div class="modal-xabar">Yangi mijoz</div>
+      <div class="forma-guruh">
+        <label>Ism <span class="majburiy">*</span></label>
+        <input type="text" id="mm-ism" placeholder="Ism familiya">
+      </div>
+      <div class="forma-guruh">
+        <label>Telefon <span class="majburiy">*</span></label>
+        <input type="text" id="mm-telefon" placeholder="+998 90 123 45 67">
+      </div>
+      <div class="modal-tugmalar">
+        <button class="btn btn-kulrang" id="mm-bekor">Bekor qilish</button>
+        <button class="btn btn-asosiy" id="mm-saqlash">Saqlash</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay yashirin" id="batafsil-modal-overlay">
+    <div class="modal modal-katta">
+      <div class="modal-icon">📋</div>
+      <div class="modal-xabar" id="batafsil-ism">Mijoz nasiyalari</div>
+      <div id="batafsil-royxat"></div>
+      <div class="modal-tugmalar">
+        <button class="btn btn-kulrang" id="batafsil-yopish">Yopish</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
